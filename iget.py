@@ -6,6 +6,7 @@
 import concurrent.futures
 import datetime
 import glob
+import imghdr
 import logging
 import logging.config
 import optparse
@@ -15,7 +16,6 @@ import shutil
 import sys
 from urllib.parse import unquote, quote
 
-import imghdr
 import requests
 from selenium import webdriver
 from selenium.webdriver import DesiredCapabilities
@@ -415,3 +415,4 @@ if __name__ == '__main__':
     download_many(urls, dst, offset, prefix, logger, proxies=None)
 
     driver.close()
+
