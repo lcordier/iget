@@ -5,8 +5,13 @@ Search Google Images and download the first N results.
 ## Installation
 
  1. Clone the repo.
-    ```git clone https://github.com/lcordier/iget.git```
-     
+    ```
+    git clone https://github.com/lcordier/iget.git
+    ```
+ 2. Install requirements.
+    ```
+    python3 -m pip install -r requirements.txt
+    ```
 
 ## License
 
