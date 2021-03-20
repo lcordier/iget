@@ -12,6 +12,12 @@ Search Google Images and download the first N results.
     ```
     python3 -m pip install -r requirements.txt
     ```
+ 3. Download latest Chrome browser.
+    [https://www.google.com/chrome/](https://www.google.com/chrome/)
+ 4. Download matching Sellenium Chrome Webdriver.
+    [https://chromedriver.chromium.org/downloads/](https://chromedriver.chromium.org/downloads/)
+ 5. Install the Webdriver into your PATH.
+
 
 ## License
 
