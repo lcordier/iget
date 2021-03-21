@@ -14,6 +14,7 @@ import os
 import re
 import shutil
 import sys
+import time
 from urllib.parse import unquote, quote
 
 import requests
@@ -78,9 +79,12 @@ FORMAT_EXT = {
     'png': '.png',
     'svg': '.svg',
     'webp': '.webp',
+    'bmp': '.bmp',
+    'ico': '.ico',
 }
 
 SIZES = {
+    '': '',
     'large': 'isz:l',
     'medium': 'isz:m',
     'icon': 'isz:i',
@@ -101,6 +105,7 @@ SIZES = {
 }
 
 TYPES = {
+    '': '',
     'face': 'itp:face',
     'photo': 'itp:photo',
     'clipart': 'itp:clipart',
@@ -109,6 +114,7 @@ TYPES = {
 }
 
 FILE_TYPES = {
+    '': '',
     'gif': 'ift:gif',
     'bmp': 'ift:bmp',
     'ico': 'ift:ico',
@@ -119,6 +125,7 @@ FILE_TYPES = {
 }
 
 RIGHTS = {
+    '': '',
     'cc': 'sur:cl',
     'other': 'sur:ol',
 }
@@ -161,6 +168,7 @@ def download(url, dst, prefix, logger, timeout=20, proxies=None):
                 f.write(response.content)
             response.close()
             ext = FORMAT_EXT.get(imghdr.what(path).lower())
+            logger.info('Identified file-extension: {}: {}'.format(imghdr.what(path), ext))
             if ext:
                 shutil.move(path, path + ext)
                 logger.info('Success: {url} -> {filename}'.format(url=url, filename=prefix + ext))
@@ -200,13 +208,13 @@ def google_url(query, size=None, type_=None, file_type=None, site=None, safe=Non
     url = 'https://www.google.com/search?tbm=isch&hl=en'
     url += '&q=' + quote(query)
 
-    tbs = '&tbs='
+    tbs = ''
     tbs += SIZES.get(size, '')
     tbs += cv(TYPES.get(type_, ''))
     tbs += cv(FILE_TYPES.get(file_type, ''))
     tbs += cv(RIGHTS.get(rights, ''))
 
-    url += tbs
+    url += '&tbs=' + tbs.lstrip(',')
 
     if site:
         url += '&as_sitesearch={}'.format(site)
@@ -295,7 +303,7 @@ if __name__ == '__main__':
                       action='store',
                       type='int',
                       default=10,
-                      help='number of images to download [10]')
+                      help='number of images to download [%default]')
 
     parser.add_option('-p',
                       '--prefix',
@@ -303,39 +311,42 @@ if __name__ == '__main__':
                       action='store',
                       type='string',
                       default='img',
-                      help='filename prefix [img]')
+                      help='filename prefix [%default]')
 
     parser.add_option('-d',
                       '--dst',
                       dest='dst',
                       action='store',
                       type='string',
-                      default='',
-                      help='destination folder')
+                      default='.',
+                      help='destination folder [%default]')
 
     parser.add_option('-f',
                       '--file-type',
                       dest='file_type',
                       action='store',
-                      type='string',
+                      type='choice',
+                      choices=list(FILE_TYPES),
                       default='',
-                      help='image file-type')
+                      help='image file-type [%default]')
 
     parser.add_option('-s',
                       '--size',
                       dest='size',
                       action='store',
-                      type='string',
+                      type='choice',
+                      choices=list(SIZES),
                       default='',
-                      help='image size')
+                      help='image size [%default]')
 
     parser.add_option('-t',
                       '--type',
                       dest='type',
                       action='store',
-                      type='string',
+                      type='choice',
+                      choices=list(TYPES),
                       default='',
-                      help='image type')
+                      help='image type [%default]')
 
     parser.add_option('-x',
                       '--safe',
@@ -350,15 +361,16 @@ if __name__ == '__main__':
                       action='store',
                       type='string',
                       default='',
-                      help='site or domain to search')
+                      help='site or domain to search [%default]')
 
     parser.add_option('-r',
                       '--rights',
                       dest='rights',
                       action='store',
-                      type='string',
+                      type='choice',
+                      choices=list(RIGHTS),
                       default='',
-                      help='image usage rights')
+                      help='image usage rights [%default]')
 
     parser.add_option('-v',
                       '--verbose',
