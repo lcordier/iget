@@ -15,7 +15,7 @@ import re
 import shutil
 import sys
 import time
-from urllib.parse import unquote, quote
+from urllib.parse import quote, urlparse, urlunparse
 
 import requests
 from selenium import webdriver
@@ -373,6 +373,14 @@ if __name__ == '__main__':
                       default='',
                       help='image usage rights')
 
+    parser.add_option('',
+                      '--proxy',
+                      dest='proxy',
+                      action='store',
+                      type='string',
+                      default='',
+                      help='proxy string in the form: https://username:password@host:port/')
+
     parser.add_option('-v',
                       '--verbose',
                       dest='verbose',
@@ -385,6 +393,15 @@ if __name__ == '__main__':
     if not (options.query):
         parser.print_help()
         sys.exit()
+
+    if options.proxy:
+        scheme, netloc, path, params, query, fragment = urlparse(options.proxy)
+        proxies = {
+            'http': urlunparse(('http', netloc, path, params, query, fragment)),
+            'https': urlunparse(('https', netloc, path, params, query, fragment)),
+        }
+    else:
+        proxies = None
 
     # Dereference.
     query = options.query
@@ -411,7 +428,9 @@ if __name__ == '__main__':
     chrome_path = shutil.which('chromedriver')
     chrome_options = webdriver.ChromeOptions()
     chrome_options.add_argument('headless')
-    # chrome_options.add_argument('--proxy-server={}://{}'.format(proxy_type, proxy))
+    # What about http proxies?
+    if proxies:
+        chrome_options.add_argument('--proxy-server={url}'.format(url=proxies['https'])))
     driver = webdriver.Chrome(chrome_path, options=chrome_options)
     driver.set_window_size(1920, 1080)
     driver.get(url)
@@ -425,7 +444,7 @@ if __name__ == '__main__':
     else:
         offset = 1
 
-    download_many(urls, dst, offset, prefix, logger, proxies=None)
+    download_many(urls, dst, offset, prefix, logger, proxies=proxies)
 
     driver.close()
 
