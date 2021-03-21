@@ -329,7 +329,7 @@ if __name__ == '__main__':
                       type='choice',
                       choices=list(FILE_TYPES),
                       default='',
-                      help='image file-type [%default]')
+                      help='image file-type')
 
     parser.add_option('-s',
                       '--size',
@@ -338,7 +338,7 @@ if __name__ == '__main__':
                       type='choice',
                       choices=list(SIZES),
                       default='',
-                      help='image size [%default]')
+                      help='image size')
 
     parser.add_option('-t',
                       '--type',
@@ -347,7 +347,7 @@ if __name__ == '__main__':
                       type='choice',
                       choices=list(TYPES),
                       default='',
-                      help='image type [%default]')
+                      help='image type')
 
     parser.add_option('-x',
                       '--safe',
@@ -362,7 +362,7 @@ if __name__ == '__main__':
                       action='store',
                       type='string',
                       default='',
-                      help='site or domain to search [%default]')
+                      help='site or domain to search')
 
     parser.add_option('-r',
                       '--rights',
@@ -371,7 +371,7 @@ if __name__ == '__main__':
                       type='choice',
                       choices=list(RIGHTS),
                       default='',
-                      help='image usage rights [%default]')
+                      help='image usage rights')
 
     parser.add_option('-v',
                       '--verbose',
