@@ -19,6 +19,11 @@ Search Google Images and download the first N results.
  5. Install the Webdriver into your PATH.
 
 
+## Known Issues
+
+Some (most) websites block SVG downloads, possibly on `User-Agent` or `Referer`
+headers.
+
 ## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
