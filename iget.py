@@ -15,7 +15,7 @@ import re
 import shutil
 import sys
 import time
-from urllib.parse import quote, urlparse, urlunparse
+from urllib.parse import quote, unquote, urlparse, urlunparse
 
 import requests
 from selenium import webdriver
@@ -425,26 +425,29 @@ if __name__ == '__main__':
 
     url = google_url(query, size=size, type_=type_, file_type=file_type, site=site, safe=safe, rights=rights)
 
-    chrome_path = shutil.which('chromedriver')
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.add_argument('headless')
-    # What about http proxies?
-    if proxies:
-        chrome_options.add_argument('--proxy-server={url}'.format(url=proxies['https'])))
-    driver = webdriver.Chrome(chrome_path, options=chrome_options)
-    driver.set_window_size(1920, 1080)
-    driver.get(url)
-    logger.info('Google: {url}'.format(url=url))
-    urls = google_extract_urls(driver, options.n, logger)
 
-    ensure_directory_exists(dst)
-    filenames = sorted([filename for filename in os.listdir(dst) if filename.startswith(prefix)])
-    if filenames:
-        offset = int(os.path.splitext(filenames[-1])[0][len(prefix)+1:]) + 1
-    else:
-        offset = 1
+    try:
+        chrome_path = shutil.which('chromedriver')
+        chrome_options = webdriver.ChromeOptions()
+        chrome_options.add_argument('headless')
+        # What about http proxies?
+        if proxies:
+            chrome_options.add_argument('--proxy-server={url}'.format(url=proxies['https']))
+        driver = webdriver.Chrome(chrome_path, options=chrome_options)
+        driver.set_window_size(1920, 1080)
+        driver.get(url)
+        logger.info('Google: {url}'.format(url=url))
+        urls = google_extract_urls(driver, options.n, logger)
 
-    download_many(urls, dst, offset, prefix, logger, proxies=proxies)
+        ensure_directory_exists(dst)
+        filenames = sorted([filename for filename in os.listdir(dst) if filename.startswith(prefix)])
+        if filenames:
+            offset = int(os.path.splitext(filenames[-1])[0][len(prefix)+1:]) + 1
+        else:
+            offset = 1
 
-    driver.close()
+        download_many(urls, dst, offset, prefix, logger, proxies=proxies)
+
+    finally:
+        driver.close()
 
